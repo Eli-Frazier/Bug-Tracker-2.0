@@ -1,0 +1,48 @@
+﻿
+@{
+    ViewBag.Title = "RoleAssignment";
+}
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>RoleAssignment</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 text-center">
+            @Html.Label("Select User")
+        </div>
+
+        <div class="col-md-6 text-center">
+            @Html.Label("Select Role")
+        </div>
+    </div>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <div class="row">
+
+
+            <div class="col-md-6">
+                @Html.DropDownList("Users", null, htmlAttributes: new { @class = "form-control" })
+            </div>
+
+            <div class="col-md-6">
+                @Html.DropDownList("Roles", null, htmlAttributes: new { @class = "form-control" })
+            </div>
+
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <button class="btn btn-primary" type="submit">Save</button>
+            </div>
+        </div>
+    }
+</div>

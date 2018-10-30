@@ -1,0 +1,179 @@
+﻿@model Bug_Tracker.ViewModels.IndexVM
+
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<div class="row">
+    <br />
+    <!-- START Left Column -->
+    <div class="col-lg-3">
+        <!-- START Projects -->
+        <div class="hr-text hr-text-left m-t-2 m-b-1">
+            <h6 class="text-white"><strong>Projects</strong></h6>
+        </div>
+
+        <ul class="nav nav-pills nav-stacked">
+            @foreach(var proj in Model.Projects)
+            {
+                <li role="presentation">
+                    <a href=@Url.Action("Details", "Projects", new { id = proj.Id})>
+                        <i class="fa fa-fw fa-plus text-gray-lighter m-r-1"></i>
+                        @proj.Name
+                        <span class="badge pull-right">
+                            @proj.Tickets.Count
+                        </span> 
+                    </a>
+                </li>
+            }
+        </ul>
+        <!-- END Projects -->
+
+       
+
+    </div>
+    <!-- END Left Column -->
+
+
+
+    <div class="col-lg-9 col-md-8">
+
+        <!-- START Header with Option -->
+        <div class="row m-b-1">
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <!-- START Header -->
+                <h3 class="f-w-300 m-t-1">
+                    <a href=@Url.Action("MyProjects", "Projects")>
+                        Projects
+                    </a>
+
+                    <span class="text-muted">
+                        <span class="m-r-1 m-l-1">
+                            /
+                        </span>
+                    </span>
+
+                    <span class="text-black">Tickets</span>
+
+                    <span class="badge m-l-1 hidden-xs hidden-sm">
+                        @Model.Tickets.Count() Tickets
+                    </span>
+                </h3>
+                <!-- END Header -->
+
+                <div class="btn-toolbar pull-right hidden-lg hidden-md hidden-sm">
+                    <div class="btn-group btn-group-justified" role="group" aria-label="...">
+                        <a role="button" href="tasks-list.html" class="btn btn-block btn-default active"><i class="fa fa-list"></i></a>
+                        <a class="btn btn-block btn-default" href="tasks-grid.html" role="button"><i class="fa fa-th-large"></i></a>
+                        <a class="btn btn-block btn-default" href="#" role="button"><i class="fa fa-plus"></i></a>
+                    </div>
+
+                </div>
+
+            </div>
+            
+        </div>
+        <!-- END Header with Option -->
+        <!-- START Table Files -->
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+
+                    <tr>
+                        <th class="small text-muted text-uppercase">
+                            <strong>Priority</strong>
+                        </th>
+                        <th class="small text-muted text-uppercase">
+                            <strong>Title &amp; Description</strong>
+                        </th>
+                        <th class="small text-muted text-right text-uppercase">
+                            <strong>People</strong>
+                        </th>
+                        <th class="small text-muted text-right text-uppercase">
+                            <strong>Update</strong>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <!-- START ROW Task -->
+                    @foreach (var ticket in Model.Tickets)
+                    {
+                        <tr>
+                            <td class="v-a-m">
+                                @if (ticket.TicketPriority.Name == "High")
+                                {
+                                    <span class="label label-danger label-outline">@ticket.TicketPriority.Name</span>
+                                }
+                                else if (ticket.TicketPriority.Name == "Medium")
+                                {
+                                    <span class="label label-warning label-outline">@ticket.TicketPriority.Name</span>
+                                }
+                                else if (ticket.TicketPriority.Name == "Low")
+                                {
+                                    <span class="label label-info label-outline">@ticket.TicketPriority.Name</span>
+                                }
+                                else if (ticket.TicketPriority.Name == "Optional")
+                                {
+                                    <span class="label label-gray label-outline">@ticket.TicketPriority.Name</span>
+                                }
+
+                            </td>
+
+
+                            <td class="v-a-m">
+                                <span class="text-muted m-r-1"><span>#@ticket.Id</span></span><a href=@Url.Action("Details", "Tickets", new { id = ticket.Id })><span>@ticket.Title</span></a>
+                                <br>
+                                @{
+                                    var strLength = @ticket.Description.Length;
+                                    var newLength = strLength > 250 ? 250 : strLength;
+                                }
+                                <span>
+                                    @ticket.Description.Substring(0, newLength)
+                                </span>
+                                @if (strLength != newLength)
+                                {
+                                    @Html.ActionLink(" ...(read more)", "Details", "Tickets", new { id = ticket.Id }, null)
+                                }
+
+                            </td>
+
+                            @if (ticket.AssignedToUserId != null)
+                            {
+                                <td class="v-a-m text-right">
+                                    @ticket.AssignedToUser.DisplayName
+                                </td>
+                            }
+                            else
+                            {
+                                <td class="v-a-m text-right">
+                                    <span class="text-danger">Unassigned</span>
+                                </td>
+                            }
+
+
+                            <td class="v-a-m text-right">
+                                <span>@ticket.Updated.ToString().Split(' ')[0]</span>
+                            </td>
+                        </tr>
+                    }
+                    <!-- END ROW Task -->
+
+                </tbody>
+            </table>
+        </div>
+        <!-- END Table Files -->
+
+    </div>
+
+</div>
+
+<!-- END EDIT CONTENT -->
+
+
+@section scripts{
+    <script>
+        $('.table').DataTable();
+    </script>
+}

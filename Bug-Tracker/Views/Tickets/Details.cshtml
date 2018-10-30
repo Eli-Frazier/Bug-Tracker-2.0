@@ -1,0 +1,444 @@
+﻿@using Microsoft.AspNet.Identity
+@using Bug_Tracker.Models
+@using Bug_Tracker.Helpers
+
+@model Bug_Tracker.Models.Ticket
+
+@{
+    var db = new ApplicationDbContext();
+    var user = User.Identity.GetUserId();
+    var userId = db.Users.Find(user).Id;
+
+    var projHelper = new ProjectHelper();
+    var roleHelper = new UserRolesHelper();
+
+    ViewBag.Title = "Details";
+}
+
+<!-- START EDIT CONTENT -->
+
+<div class="row">
+    <br />
+    <!-- START Navigation Tree & Search -->
+    <div class="col-lg-3">
+
+        <div class="hr-text hr-text-left m-t-0 m-b-1">
+            <h6 class="text-black"><strong>Task Details</strong></h6>
+        </div>
+
+        <!-- START Table Task Details -->
+        <table class="table table-condensed">
+            <tbody>
+
+                <!-- START ROW Task Details  -->
+                <tr>
+                    <td class="v-a-m b-t-0">
+                        Project
+                    </td>
+                    <td class="v-a-m b-t-0 text-right">
+                        <a href=@Url.Action("Details", "Projects", new { id = Model.ProjectId })> @Html.DisplayFor(model => model.Project.Name)</a>
+                    </td>
+                </tr>
+                <!-- END ROW Task Details  -->
+                <!-- START ROW Task Details  -->
+                <tr>
+                    <td class="v-a-m">
+                        Owned by
+                    </td>
+                    <td class="v-a-m text-right text-black">
+                        @Html.DisplayFor(model => model.OwnerUser.Email)
+                    </td>
+                </tr>
+                <!-- END ROW Task Details  -->
+                <!-- START ROW Task Details  -->
+                <tr>
+                    <td class="v-a-m">
+                        Created Date
+                    </td>
+                    <td class="v-a-m text-right text-black">
+                        @Html.DisplayFor(model => model.Created.ToString().Split(' ')[0])
+                    </td>
+                </tr>
+                <!-- END ROW Task Details  -->
+                <!-- START ROW Task Details  -->
+                <tr>
+                    <td class="v-a-m">
+                        Updated Date
+                    </td>
+                    <td class="v-a-m text-right text-black">
+                        @Html.DisplayFor(model => model.Updated.ToString().Split(' ')[0])
+                    </td>
+                </tr>
+                <!-- END ROW Task Details  -->
+                <!-- START ROW Task Details  -->
+                <tr>
+                    <td class="v-a-m">
+                        Priority
+                    </td>
+                    <td class="v-a-m text-right text-black">
+                        @Html.DisplayFor(model => model.TicketPriority.Name)
+                    </td>
+                </tr>
+                <!-- END ROW Task Details  -->
+                <!-- START ROW Task Details  -->
+                <tr>
+                    <td class="v-a-m">
+                        Task ID
+                    </td>
+                    <td class="v-a-m text-right text-black">
+                        # @Html.DisplayFor(model => model.Id)
+
+                    </td>
+                </tr>
+                <!-- END ROW Task Details  -->
+
+
+            </tbody>
+        </table>
+        <!-- END Table Task Details -->
+        <div class="hr-text hr-text-left m-t-2 m-b-1">
+            <h6 class="text-white"><strong>Assigned to</strong></h6>
+        </div>
+
+        <!-- START Widget - Menu Pills Vertical -->
+        <div class="scroll-300 custom-scrollbar">
+            <ul class="nav nav-pills nav-stacked">
+
+                <!-- START User Online (Small) -->
+                <li role="presentation">
+                    <div class="media">
+                        <div class="media-body">
+                            <h5 class="m-t-0 m-b-0 text-black"><span>@Html.DisplayFor(model => model.AssignedToUser.Email)</span></h5>
+                        </div>
+
+                    </div>
+
+                </li>
+                <!-- START User Online (Small) -->
+
+            </ul>
+        </div>
+        <!-- END Widget - Menu Pills Vertical -->
+        <!--History-->
+        <div class="hr-text hr-text-left m-t-2 m-b-1">
+            <h6 class="text-white"><strong>History</strong></h6>
+        </div>
+        <div class="panel-body scroll-640 custom-scrollbar">
+            <!-- START Timeline - Active Entry (Day) -->
+            @foreach (var history in Model.TicketHistories.OrderByDescending(c => c.Changed))
+            {
+                <div class="timeline">
+                    <!-- Timeline - Badge Date -->
+                    <div class="timeline-date">
+                        <span class="badge">@history.Changed.ToString().Split(' ')[0]</span>
+                    </div>
+                    <div class="timeline-item p-r-1">
+                        <!-- Timeline - Mini Icon -->
+                        <div class="timeline-icon">
+                            <i class="fa fa-fw fa-circle text-warning"></i>
+                        </div>
+
+                        <!-- Timeline - Icon  -->
+                        <div class="timeline-item-head clearfix m-b-0">
+                            <!-- Timeline - Header & Subtitle -->
+                            <!-- START Avatar, Message & Time -->
+                            <div class="row">
+
+                                <div class="col-lg-12 m-l-1">
+
+                                    <span class="label label-warning label-outline">@history.Ticket.Title</span>
+                                    <br>
+                                    <p class="text-black m-t-1">
+                                        <span>
+                                            Property: @history.Property
+                                        </span>
+                                    </p>
+                                    <p>
+                                        <span>
+                                            Old Value: @history.OldValue
+                                        </span>
+                                    </p>
+                                    <p>
+                                        <span>
+                                            New Value: @history.NewValue
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                            <!-- END Avatar, Message & Time -->
+
+                        </div>
+                    </div>
+                </div>
+            }
+            <!-- END Timeline - Active Entry (Day) -->
+
+
+
+        </div>
+        <!--End History-->
+    </div>
+    <!-- END Navigation Tree & Search -->
+
+
+    <div class="col-lg-9">
+
+        <!-- START Header with Option -->
+        <div class="row m-b-2">
+
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <!-- START Header -->
+                <h3 class="f-w-300 m-t-1">
+                    <a href=@Url.Action("MyProjects", "Projects")>Projects</a>
+
+                    <span class="text-muted">
+                        <span class="m-r-1 m-l-1">/</span>
+                    </span>
+
+                    <a href=@Url.Action("Details", "Projects", new { id = Model.ProjectId })>@Model.Project.Name</a>
+
+                    <span class="text-muted">
+                        <span class="m-r-1 m-l-1">/</span>
+                    </span>
+
+                    <span class="text-black">Ticket Details</span>
+                </h3>
+                <!-- END Header -->
+
+                <div class="btn-toolbar pull-right hidden-lg hidden-md hidden-sm">
+                    <div class="btn-group btn-group-justified" role="group" aria-label="...">
+                        <a href="#" class="btn btn-block btn-default" role="button"><i class="fa fa-gear"></i></a>
+                        <a class="btn btn-block btn-default" href="#" role="button"><i class="fa fa-pencil"></i></a>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="col-lg-5 col-md-5 col-xs-6 col-lg-offset-1 col-md-offset-1 col-sm-4 col-sm-offset-2 hidden-xs">
+                <!-- START Toolbar -->
+                <div class="btn-toolbar pull-right">
+                    @if (Model.AssignedToUserId == userId || Model.OwnerUserId == userId || User.IsInRole("Admin") || (User.IsInRole("Project Manager") && projHelper.IsUserOnProject(userId, Model.ProjectId)))
+                    {
+                        <div class="btn-group" role="group" aria-label="...">
+                            <a href=@Url.Action("Edit", "Tickets", new { id = Model.Id }) type="button" class="btn btn-primary"><i class="fa fa-pencil"></i> Edit Ticket</a>
+                        </div>
+                    }
+                </div>
+                <!-- END Toolbar -->
+            </div>
+        </div>
+        <!-- END Header with Option -->
+        <!-- START Panel Sessions -->
+        <div class="panel panel-default b-a-2 no-bg b-gray-dark">
+
+            <div class="panel-body">
+
+                <!-- START Header Task Details -->
+                <div class="media media-auto m-b-3">
+                    <div class="media-body p-l-1">
+                        <h3 class="f-w-300 m-t-0 m-b-1"><span class="text-muted m-r-1">#@Html.DisplayFor(model => model.Id)</span> <span class="text-black">@Html.DisplayFor(model => model.Title)</span> </h3>
+
+                        <span class="label label-danger label-outline">@Html.DisplayFor(model => model.TicketType.Name)</span>
+
+                    </div>
+                </div>
+                <!-- END Header Task Details -->
+
+
+
+                <p>
+                    <span>
+                        @Html.DisplayFor(model => model.Description)
+                    </span>
+                </p>
+
+
+                <!-- START Attachments Section -->
+                <div class="hr-text hr-text-left m-t-3">
+                    <h6 class="text-white"><strong class="m-r-1">Attachments </strong> <span class="badge">@Model.TicketAttachments.Count</span></h6>
+                </div>
+                <!-- START Table Attachment (3) -->
+                <table class="table table-hover m-b-1">
+                    <tbody class="scroll-640 custom-scrollbar">
+
+                        <!-- START ROW Attachment  -->
+                        @foreach (var attachment in Model.TicketAttachments)
+                        {
+                            <tr>
+                                <td class="v-a-m b-t-0">
+                                    <div class="media media-auto">
+                                        <div class="media-left">
+                                            <span class="fa-stack fa-lg">
+
+                                                @if (attachment.FilePath.Contains("docx"))
+                                                {
+                                                    <i class="fa fa-square fa-stack-2x text-primary"></i>
+                                                    <i class="fa fa-file-word-o fa-stack-1x fa-inverse text-white"></i>
+                                                }
+                                                else if (attachment.FilePath.Contains("pdf"))
+                                                {
+                                                    <i class="fa fa-square fa-stack-2x text-warning"></i>
+                                                    <i class="fa fa-file-pdf-o fa-stack-1x fa-inverse text-white"></i>
+                                                }
+                                                else if (attachment.FilePath.Contains("png") || attachment.FilePath.Contains("jpg") || attachment.FilePath.Contains("jpeg") || attachment.FilePath.Contains("gif"))
+                                                {
+                                                    <i class="fa fa-square fa-stack-2x text-danger"></i>
+                                                    <i class="fa fa-file-image-o fa-stack-1x fa-inverse text-white"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="fa fa-square fa-stack-2x text-default"></i>
+                                                    <i class="fa fa-file-o fa-stack-1x fa-inverse text-white"></i>
+                                                }
+                                            </span>
+                                        </div>
+                                        <div class="media-body">
+                                            <span class="media-heading text-white">
+                                                <a href="@Url.Content(attachment.FilePath)" target="_blank">
+                                                    @attachment.FilePath.Split('/')[3]
+                                                </a>
+                                            </span>
+                                            <br /><span class="text-muted">@attachment.Description</span>
+                                            <br> by <span>@attachment.User.DisplayName</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="v-a-m b-t-0 text-right">
+                                    <span>@attachment.Created.ToString().Split(' ')[0]</span>
+                                </td>
+                            </tr>
+                        }
+                        <!-- END ROW Attachment  -->
+
+                    </tbody>
+                </table>
+                <!-- END Table Attachment (5) -->
+                @if (Model.AssignedToUserId == userId || Model.OwnerUserId == userId || User.IsInRole("Admin") || (User.IsInRole("Project Manager") && projHelper.IsUserOnProject(userId, Model.ProjectId)))
+                {
+                    <a href=@Url.Action("Create", "TicketAttachments", new { id = Model.Id })>Add More Files to this Task</a>
+                }
+
+                <!-- END Attachments Section -->
+                <!-- START Comments Section -->
+                <div class="hr-text hr-text-left m-t-3">
+                    <h6 class="text-white"><strong class="m-r-1">Comments </strong><span class="badge">@Model.TicketComments.Count</span></h6>
+                </div>
+                @if (Model.AssignedToUserId == userId || Model.OwnerUserId == userId || User.IsInRole("Admin") || (User.IsInRole("Project Manager") && projHelper.IsUserOnProject(userId, Model.ProjectId)))
+                {
+                    <div class="panel-footer">
+                        <!-- START Send Message Input -->
+                        @using (Html.BeginForm("Create", "TicketComments", FormMethod.Post, new { @*@class = "form-horizontal",*@ role = "form" }))
+                        {
+
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("TicketId", Model.Id)
+
+
+                            <div class="input-group">
+                                @Html.TextArea("CommentBody", new { @class = "form-control", type = "text", placeholder = "Your Message...", id = "name" })
+
+                                <span class="input-group-btn">
+                                    <input type="submit" value="Create" class="btn btn-primary" />
+                                </span>
+                            </div>
+
+                        }
+
+                        <!-- END Send Message Input -->
+                    </div>
+                }
+                <ul class="media-list scroll-640 custom-scrollbar">
+
+                    <!-- START Comment -->
+                    @foreach (var comment in Model.TicketComments.OrderByDescending(c => c.Created))
+                    {
+                        <li class="media m-t-1">
+                            <div class="media-body">
+                                <h5 class="m-t-0"><span class="text-black">@comment.User.DisplayName</span> <small><span>at  @comment.Created.ToString().Split(' ')[0]</span></small></h5>
+                                <span>
+                                    @comment.Comment
+
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <button id="Delete" onclick="AjaxDelete(@comment.Id)" class="btn btn-danger pull-right">Delete</button>
+                                    }
+                                </span>
+                                <br>
+                                <hr />
+                            </div>
+                        </li>
+                    }
+                    <!-- END Comment -->
+
+                </ul>
+
+            </div>
+
+
+
+        </div>
+        <!-- END Panel Sessions -->
+        <!-- END EDIT CONTENT -->
+    </div>
+</div>
+
+
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        function AjaxDelete(commentId) {
+            //$("#Delete").click(function () {
+                swal({
+                    title: "Are you sure?",
+                    text: "Once deleted, you will not be able to recover this post!",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                })
+                    .then((willDelete) => {
+                        if (willDelete) {
+                            //Add code here for AJAX call to perform requested delete action
+                            $.ajax({
+                                type: 'GET',
+                                url: "@Url.Action("AjaxDelete", "TicketComments")",
+                                data: { id: commentId },
+                                success: function (result) {
+                                    if (result === "Success") {
+                                        swal({
+                                            text: "Poof! This comment has been deleted!",
+                                            icon: "success",
+                                            buttons: {
+                                                cancel: "OK"
+                                            },
+                                        })
+                                            .then((value) => {
+                                                switch (value) {
+                                                    default:
+                                                    window.location.href = "@Url.Action("Details", "Tickets", new { id = Model.Id })";
+                                                        //return RedirectToAction("Details", "BlogPosts", new { slug = Slug }, null);
+                                                }
+                                            });
+                                    }
+                                    else {
+                                        swal("Uh-Oh! Something went wrong while trying to delete...", {
+                                            icon: "error"
+                                        });
+                                    }
+                                },
+                                error: function () {
+                                    swal("You Suck and something went horribly awry!", {
+                                        icon: "error"
+                                    });
+                                }
+                            });
+                        }
+                        else {
+                            swal("Your post will live to see another day.");
+                        }
+                    });
+            //});
+        }
+    </script>
+}

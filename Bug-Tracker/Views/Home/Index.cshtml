@@ -1,0 +1,202 @@
+﻿@model Bug_Tracker.ViewModels.IndexVM
+
+<style>
+    .panel-default > .panel-heading {
+        color: black;
+    }
+
+    /*.content{
+        background-color: white;
+    }*/
+</style>
+
+
+<div class="row">
+    <br />
+    <div class="col-lg-12 m-t-2">
+        <!-- START ROW -->
+        <div class="row">
+
+            <!-- START All Tasks -->
+            <div class="col-lg-4 col-md-6 col-sm-6 m-b-2 col-md-offset-2">
+                <div class="hr-text hr-text-left m-t-0 m-b-0">
+                    <h6 class="text-black"><strong>All Tasks</strong><span class="m-l-1 badge badge-gray-lighter badge-outline">@Model.Tickets.Count</span></h6>
+                </div>
+
+                <div class="media">
+                    <div class="media-left media-middle">
+                        <p class="data-attributes media-object text-left m-t-0 m-b-0">
+                            <span data-peity="{
+                                  &quot;fill&quot;: [&quot;#2D99DC&quot;, &quot;#0058A1&quot;, &quot;#222d33&quot;, &quot;#E66C40&quot;, &quot;#CB3E4B&quot;],  &quot;innerRadius&quot;: 33, &quot;radius&quot;: 48 }">@Model.Tickets.Where(t => t.TicketStatus.Name == "Active").Count(),@Model.Tickets.Where(t => t.TicketStatus.Name == "Finished").Count(),@Model.Tickets.Where(t => t.TicketStatus.Name == "Assigned").Count(),@Model.Tickets.Where(t => t.TicketStatus.Name == "Optional").Count()</span>
+                        </p>
+                    </div>
+                    <div class="media-body">
+                        <i class="m-l-1 fa fa-fw fa-circle text-primary"></i> <span class="text-black m-r-1">@Model.Tickets.Where(t => t.TicketStatus.Name == "Active").Count()</span>Active
+                        <br>
+                        <i class="m-l-1 fa fa-fw fa-circle text-endaveour"></i> <span class="text-black m-r-1">@Model.Tickets.Where(t => t.TicketStatus.Name == "Finished").Count()</span>Finished
+                        <br>
+                        <i class="m-l-1 fa fa-fw fa-circle text-swamp"></i> <span class="text-black m-r-1">@Model.Tickets.Where(t => t.TicketStatus.Name == "Assigned").Count()</span>Assigned
+                        <br>
+                        <i class="m-l-1 fa fa-fw fa-circle text-warning"></i> <span class="text-black m-r-1">@Model.Tickets.Where(t => t.TicketStatus.Name == "Optional").Count()</span>Optional
+                        <br>
+                    </div>
+                </div>
+            </div>
+            <!-- END All Tasks (4) -->
+
+            <!-- START My Stats -->
+            <div class="col-lg-4 col-md-12 col-sm-12">
+                <div class="hr-text hr-text-left m-t-0 m-b-0">
+                    <h6 class="text-black"><strong>My Stats</strong></h6>
+                </div>
+
+                <table class="table table-condensed table-hover">
+
+                    <tbody>
+                        <tr>
+                            <td class="text-black b-a-0">Total Projects</td>
+                            <td class="text-right b-a-0">
+                                <span class="label label-success label-outline">@Model.Projects.Count</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-black">Total Tickets</td>
+                            <td class="text-right">
+                                <span class="label label-primary label-outline">@Model.Tickets.Count</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+            <!-- END My Stats -->
+
+        </div>
+        <!-- END ROW -->
+
+        <!-- START ROW #2 -->
+        <div class="row m-t-3">
+
+            <!-- START My Tasks -->
+            <div class="col-lg-4">
+                <div class="panel panel-default no-bg b-a-2 b-gray-dark">
+
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-sm-4 col-xs-4">Tickets</div>
+                        </div>
+                    </div>
+
+                    @Html.Partial("_TicketsPartial", Model.Tickets)
+                    <!-- END Scroll Inside Panel -->
+
+                    @*<ul class="list-group">
+                        <li class="list-group-item no-bg text-center">
+                            <a href="../apps/tasks-list.html">See More Tasks <i class="fa fa-angle-right"></i></a>
+                        </li>
+                    </ul>*@
+
+                </div>
+            </div>
+            <!-- END My Tasks -->
+
+            <!-- START My Projects - Timeline -->
+            <div class="col-lg-4">
+                <div class="panel panel-default no-bg b-a-2 b-gray-dark">
+
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-sm-4 col-xs-4">Ticket History</div>
+                        </div>
+                    </div>
+                    <!-- START Scroll Inside Panel -->
+                    <div class="scroll-640 custom-scrollbar">
+                        @foreach (var history in Model.TicketHistories.OrderByDescending(c => c.Changed))
+                        {
+                            <div class="timeline">
+                                <!-- Timeline - Badge Date -->
+                                <div class="timeline-date">
+                                    <span class="badge">@history.Changed.ToString().Split(' ')[0]</span>
+                                </div>
+                                <div class="timeline-item p-r-1">
+                                    <!-- Timeline - Mini Icon -->
+                                    <div class="timeline-icon">
+                                        <i class="fa fa-fw fa-circle text-warning"></i>
+                                    </div>
+
+                                    <!-- Timeline - Icon  -->
+                                    <div class="timeline-item-head clearfix m-b-0">
+                                        <!-- Timeline - Header & Subtitle -->
+                                        <!-- START Avatar, Message & Time -->
+                                        <div class="row">
+
+                                            <div class="col-lg-12 m-l-1">
+
+                                                <span class="label label-warning label-outline">@history.Ticket.Title</span>
+                                                <br>
+                                                <p class="text-black m-t-1">
+                                                    <span>
+                                                        Property: @history.Property
+                                                    </span>
+                                                </p>
+                                                <p>
+                                                    <span>
+                                                        Old Value: @history.OldValue
+                                                    </span>
+                                                </p>
+                                                <p>
+                                                    <span>
+                                                        New Value: @history.NewValue
+                                                    </span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <!-- END Avatar, Message & Time -->
+
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                </div>
+            </div>
+            <!-- END My Projects - Timeline -->
+
+            <!-- START My Projects -->
+            <div class="col-lg-4">
+                <div class="panel panel-default no-bg b-a-2 b-gray-dark">
+
+                    <div class="panel-heading text-black">
+                        <div class="row">
+                            <div class="col-sm-4 col-xs-4">Projects</div>
+                        </div>
+                    </div>
+
+                    <!-- START Scroll Inside Panel -->
+                    <ul class="list-group scroll-600 custom-scrollbar">
+
+                      @Html.Partial("_ProjectsPartial", Model.Projects)
+                        
+                    </ul>
+
+                    <ul class="list-group">
+                        <li class="list-group-item no-bg text-center">
+                            <a href=@Url.Action("MyProjects", "Projects")>
+                                See Your Projects
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+            <!-- END My Tasks -->
+
+
+        </div>
+        <!-- END ROW #2 -->
+
+
+    </div>
+</div>

@@ -1,0 +1,163 @@
+﻿li > form > a {
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+}
+
+    li > form > a:focus, li > form > a:hover {
+        text-decoration: none;
+        background-color: rgba(255,255,255,.2)
+    }
+
+.navbar-nav > li > form > a {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    line-height: 19px
+}
+
+.navbar-nav > li > form > a {
+    padding-top: 15.5px;
+    padding-bottom: 15.5px
+}
+
+.navbar-warning .navbar-nav > li > form > a {
+    /*color: #444;*/
+    color: white;
+}
+
+li > form > span > a {
+    position: relative;
+    display: inline-block;
+    padding: 10px 15px
+}
+
+li > form > span:focus, li > form > a > span:hover {
+    text-decoration: none;
+    background-color: rgba(255,255,255,.2)
+}
+
+.navbar-nav > li > form > span > a {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    line-height: 19px
+}
+
+.navbar-nav > li > form > span > a {
+    padding-top: 15.5px;
+    padding-bottom: 15.5px
+}
+
+.navbar-warning .navbar-nav > li > form > span > a {
+    color: white;
+}
+
+.content {
+    background-color: white;
+}
+
+footer > .container-fluid {
+    background-color: white;
+}
+
+.sidebar-light-warning {
+    font-size: 15px;
+}
+
+.text-black {
+    color: black;
+}
+
+.text-white {
+    color: white;
+}
+
+.hr-text > :first-child {
+    background-color: white;
+}
+
+.nav .open > a, .nav .open > a:focus, .nav .open > a:hover {
+    background-color: transparent;
+    border-color: #2c97de;
+}
+
+.dropdown-menu {
+    background-color: #E66C40
+}
+
+.table-hover > tbody > tr:hover {
+    background-color: #e7e7e7ab;
+    /*color: black;*/
+}
+
+.checkmark{
+    color: forestgreen;
+}
+
+.ex{
+    color: red;
+}
+
+body .btn-default {
+    background-color: #212121;
+    color: white;
+}
+
+.form-control {
+    background-color: transparent;
+    color: inherit;
+}
+
+.form-control:focus {
+    background-color: #fff;
+    border-color: black;
+    color: #262626;
+    outline: 0;
+}
+
+.navbar-brand > p{
+    font-weight: 900;
+}
+
+
+body .btn-default:hover {
+    color: black;
+    border-color: #363636;
+    background: 0 0;
+}
+.btn-default:hover {
+    color: black;
+    background-color: white;
+    border-color: #363636;
+}
+
+.panel-footer {
+    background-color: #fff;
+}
+
+h1, h2, h3, h4, h5, h6{
+    color:black;
+}
+
+.text-large{
+    font-size: 20px;
+}
+
+.select2-container.select2-container--bootstrap .select2-selection {
+    box-shadow: none;
+    background-color: white;
+    border: 1px solid #404040;
+    border-radius: 2px;
+    color: #fff;
+    font-family: -apple-system,"Helvetica Neue",Helvetica,"Segoe UI",Arial,sans-serif;
+    font-size: 13px;
+    outline: 0;
+}
+
+.select2-container.select2-container--bootstrap .select2-results > .select2-results__options {
+    background-color: white;
+}
+
+.nav > li > a:focus, .nav > li > a:hover {
+    text-decoration: none;
+    background-color: #0000000d;
+}

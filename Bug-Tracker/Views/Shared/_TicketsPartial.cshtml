@@ -1,0 +1,20 @@
+﻿@model IEnumerable<Bug_Tracker.Models.Ticket>
+
+
+@foreach (var item in Model.OrderByDescending(c => c.Created))
+{
+    <ul class="list-group scroll-600 custom-scrollbar">
+        <li class="list-group-item no-bg">
+            <div class="media">
+                <div class="media-body">
+                    <div class="m-b-0 m-t-0">
+                        <label>
+                            <a href=@Url.Action("Details", "Tickets", new { id = item.Id })><span>@item.Title</span></a>
+                            <br><span class="m-t-1 small"><span>@item.Created.ToString().Split(' ')[0]</span> </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+}

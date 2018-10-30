@@ -1,0 +1,95 @@
+﻿@model IEnumerable<Bug_Tracker.Models.Project>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="row">
+    <br />
+
+    <div class="col-lg-12">
+
+        <!-- START Header with Option -->
+        <div class="row m-b-1">
+            <div class="col-md-4 col-sm-6 col-xs-6">
+                <!-- START Header -->
+                <h3 class="f-w-300 m-t-1 text-black">Projects <span class="badge m-l-1 hidden-xs">@Model.Count()</span></h3>
+                <!-- END Header -->
+            </div>
+            <div class="col-md-4 col-xs-6 col-md-offset-4 col-sm-4 col-sm-offset-2">
+                <!-- START Toolbar -->
+                @if (User.IsInRole("Project Manager") || User.IsInRole("Admin"))
+                {
+                    <div class="btn-group" role="group" aria-label="...">
+                        <a href=@Url.Action("Create", "Projects") type="button" class="btn btn-primary"><span class="hidden-md hidden-sm hidden-xs">Add New Project</span> <i class="fa fa-fw fa-plus"></i></a>
+                    </div>
+                }
+                    
+                
+                <!-- END Toolbar -->
+            </div>
+        </div>
+        <!-- END Header with Option -->
+
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1 text-center">
+                <div class="row">
+
+                    <!-- START Grid -->
+                    @foreach (var project in Model)
+                    { 
+                        <div class="col-lg-6 col-md-6">
+
+                            <!-- START Project Grid -->
+                            <div class="panel panel-default b-a-2 no-bg b-gray-dark">
+                                <div class="panel-body">
+                                    <!-- START Media Task Name -->
+                                    <div class="media m-t-0">
+                                        <div class="media-body">
+                                            <!-- START ID & Title Task -->
+                                            <h4 class="m-b-1"><a href=@Url.Action("Details", "Projects", new { id = project.Id})>@project.Name</a> </h4>
+                                            <!-- END ID & Title Task -->
+                                        </div>
+                                    </div>
+                                    <!-- END Media Task Name -->
+                                </div>
+                                <ul class="list-group no-bg">
+                                    <li class="list-group-item no-bg">
+                                        <!-- START Widget - Usage -->
+                                        <span class="m-t-0">
+                                            Tickets: <span class="text-white">@project.Tickets.Count</span>
+                                        </span>
+                                        <!-- END Widget - Usage -->
+                                    </li>
+                                    <li class="list-group-item no-bg">
+                                        <!-- START Dropdown SM Actions -->
+                                        <div class="btn-group pull-right">
+                                            <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="fa fa-fw fa-gear"></i> <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-right">
+                                                <li><a href=@Url.Action("Details", "Projects", new { id = project.Id })><i class="fa fa-fw fa-folder-open text-gray-lighter m-r-1"></i> View</a></li>
+                                                <li><a href=@Url.Action("Create", "Tickets", new { id = project.Id })><i class="fa fa-ticket text-gray-lighter fa-fw m-r-1"></i> Add Ticket</a></li>
+                                            </ul>
+                                        </div>
+                                        <!-- END Dropdown SM Actions -->
+                                        Number of users on project:<span>@project.Users.Count</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!-- END Project Grid -->
+
+                        </div>
+                    }
+                    <!-- END Grid -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $('.table').DataTable();
+    </script> 
+}

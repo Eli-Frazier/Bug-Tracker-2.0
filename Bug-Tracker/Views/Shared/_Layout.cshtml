@@ -1,0 +1,737 @@
+﻿@using Bug_Tracker.Models
+@using Microsoft.AspNet.Identity
+@using Bug_Tracker.Helpers
+
+@{ 
+    var notifHelper = new NotificationHelper();
+
+    var db = new ApplicationDbContext();
+    var user = User.Identity.GetUserId();
+    var userId = db.Users.Find(user).Id;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<!-- START Head -->
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+    <!-- Enable responsiveness on mobile devices-->
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+
+    <title>
+        Bug Tracker EF
+    </title>
+
+    <!--START Loader -->
+    <style>
+        #initial-loader {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+            background: white;
+            position: fixed;
+            z-index: 10000;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            transition: opacity .2s ease-out
+        }
+
+            #initial-loader .initial-loader-top {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 200px;
+                border-bottom: 1px solid #2d2d2d;
+                padding-bottom: 5px;
+            }
+
+                #initial-loader .initial-loader-top > * {
+                    display: block;
+                    flex-shrink: 0;
+                    flex-grow: 0;
+                }
+
+            #initial-loader .initial-loader-bottom {
+                padding-top: 10px;
+                color: black;
+                font-family: -apple-system,"Helvetica Neue",Helvetica,"Segoe UI",Arial,sans-serif;
+                font-size: 12px
+            }
+
+        @@keyframes spin {
+            100% {
+                transform: rotate(360deg)
+            }
+        }
+
+        #initial-loader .loader g {
+            transform-origin: 50% 50%;
+            animation: spin .5s linear infinite
+        }
+
+        body.loading {
+            overflow: hidden !important
+        }
+
+        body.loaded #initial-loader {
+            opacity: 0;
+        }
+    </style>
+    <!--END Loader-->
+    <!-- SCSS Output -->
+    <link href="~/Content/app.min.e0bb64e7.css" rel="stylesheet" />
+
+    <!-- START Favicon -->
+    
+    <link rel="icon" type="image/png" href="~/images/favicon.png">
+    
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="~/images/favicon.png">
+    <meta name="theme-color" content="#ffffff">
+    <!-- END Favicon -->
+    <!-- Bower Libraries Scripts -->
+    <link href="~/Content/lib.min.css" rel="stylesheet" />
+
+
+
+    <link href="~/Content/CustomCSS.css" rel="stylesheet" />
+
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css" />
+
+
+    <!-- jekyll settings -->
+    <script>
+        var ASSET_PATH_BASE = '../';
+    </script>
+
+
+</head>
+<!-- END Head -->
+
+
+<body class="sidebar-light-warning">
+    <div id="initial-loader">
+        <div>
+            <div class="initial-loader-top">
+                <img class="initial-loader-logo" src="~/images/favicon.png" alt="Loader">
+                <div class="loader loader--style1">
+                    <svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30px" height="30px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+                    <g>
+                    <path fill="#2d2d2d" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+
+
+
+                    <path fill="#2c97de" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0C22.32,8.481,24.301,9.057,26.013,10.047z" />
+
+                    </g>
+                </svg>
+                </div>
+            </div>
+            <div class="initial-loader-bottom">
+                Loading. Please Wait. <i class="fa fa-cricle" style="opacity: 0"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-wrap">
+        <nav class="navigation">
+            <!-- START Navbar -->
+            <div class="navbar-warning navbar navbar-fixed-top">
+                <div class="container-fluid">
+
+                    <div class="navbar-header">
+                        <a class="current navbar-brand" href=@Url.Action("Index", "Home")>
+                            <p>Home</p>
+                        </a>
+                        <button class="action-right-sidebar-toggle navbar-toggle collapsed" data-target="#navdbar" data-toggle="collapse" type="button">
+                            <i class="fa fa-fw fa-align-right text-white"></i>
+                        </button>
+                        <button class="navbar-toggle collapsed" data-target="#navbar" data-toggle="collapse" type="button">
+                            <i class="fa fa-fw fa-user text-white"></i>
+                        </button>
+                        <button class="action-sidebar-open navbar-toggle collapsed" type="button">
+                            <i class="fa fa-fw fa-bars text-white"></i>
+                        </button>
+                    </div>
+
+                    <div class="collapse navbar-collapse" id="navbar">
+
+
+                        <!-- START Left Side Navbar -->
+                        <ul class="nav navbar-nav navbar-left clearfix yamm">
+
+                            <!-- START Switch Sidebar ON/OFF -->
+                            <li id="sidebar-switch" class="hidden-xs">
+                                <a class="action-toggle-sidebar-slim" data-placement="bottom" data-toggle="tooltip" href="#" title="Slim sidebar on/off">
+                                    <i class="fa fa-lg fa-bars fa-fw"></i>
+                                </a>
+                            </li>
+                            <!-- END Switch Sidebar ON/OFF -->
+
+                        </ul>
+                        <!-- END Left Side Navbar -->
+                        <!-- START Right Side Navbar -->
+                        <ul class="nav navbar-nav navbar-right">
+
+                            <li role="separator" class="divider hidden-lg hidden-md hidden-sm"></li>
+                            <li class="dropdown-header hidden-lg hidden-md hidden-sm text-gray-lighter text-uppercase">
+                                <strong>Your Profile</strong>
+                            </li>
+
+                            <!-- START Notification -->
+                            <li class="dropdown">
+
+                                <!-- START Icon Notification with Badge (10)-->
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button">
+                                    <i class="fa fa-lg fa-fw fa-bell hidden-xs"></i>
+                                    <span class="hidden-sm hidden-md hidden-lg">
+                                        Notifications
+                                        @if (notifHelper.ListUserNotifications(userId).Where(r => r.Read == false).Count() != 0)
+                                        {
+                                            <span class="badge badge-primary m-l-1">
+                                                @notifHelper.ListUserNotifications(userId).Where(r => r.Read == false).Count()
+                                            </span>
+                                        }
+
+                                    </span>
+                                    @if (notifHelper.ListUserNotifications(userId).Where(r => r.Read == false).Count() != 0)
+                                    {
+                                        <span class="label label-primary label-pill label-with-icon hidden-xs">@notifHelper.ListUserNotifications(userId).Where(r => r.Read == false).Count()</span>
+                                    }
+                                    <span class="fa fa-fw fa-angle-down hidden-lg hidden-md hidden-sm"></span>
+                                </a>
+                                <!-- END Icon Notification with Badge (10)-->
+                                <!-- START Notification Dropdown Menu -->
+                                <ul class="dropdown-menu dropdown-menu-right p-t-0 b-t-0 p-b-0 b-b-0 b-a-0">
+                                    <li>
+                                        <div class="yamm-content p-t-0 p-r-0 p-l-0 p-b-0 scroll-300 custom-scrollbar">
+                                            <ul class="list-group m-b-0 b-b-0">
+                                                <li class="list-group-item b-r-0 b-l-0 b-r-0 b-t-r-0 b-t-l-0 b-b-2 w-350">
+                                                    <small class="text-uppercase">
+                                                        <strong class="text-white">Notifications</strong>
+                                                    </small>
+                                                </li>
+
+                                                <!-- START Scroll Inside Panel -->
+                                                @if (notifHelper.ListUserNotifications(userId).Where(r => r.Read == false).Count() == 0)
+                                                {
+                                                    <li class="list-group-item b-a-0 p-x-0 p-y-0 b-t-0">
+                                                        <div class="scroll-300 custom-scrollbar text-white">
+                                                            There are no new notifications
+                                                        </div>
+                                                    </li>
+                                                }
+                                                else
+                                                {
+                                                    foreach (var notification in notifHelper.ListUserNotifications(userId).Where(r => r.Read == false))
+                                                    {
+                                                        <li class="list-group-item b-a-0 p-x-0 p-y-0 b-t-0">
+                                                            <div class="scroll-300 custom-scrollbar">
+                                                                <a href=@Url.Action("Details", "Tickets", new { id = notification.TicketId }) onclick="AjaxRead(@notification.Id)" class="list-group-item b-r-0 b-t-0 b-l-0">
+                                                                    <div class="media">
+                                                                        <div class="media-left">
+                                                                            <span class="fa-stack fa-lg">
+                                                                                <i class="fa fa-circle-thin fa-stack-2x text-warning"></i>
+                                                                                <i class="fa fa-exclamation fa-stack-1x fa-fw text-warning"></i>
+                                                                            </span>
+                                                                        </div>
+                                                                        <div class="media-body">
+                                                                            <h5 class="m-t-0 text-white">
+                                                                                <span>@Html.Raw(notification.Body.ToString().Split('E')[0])</span>
+                                                                            </h5>
+                                                                        </div>
+                                                                    </div>
+                                                                </a>
+                                                            </div>
+                                                        </li>
+                                                    }
+                                                }
+
+
+                                                <!-- END Scroll Inside Panel -->
+                                            </ul>
+                                        </div>
+
+                                    </li>
+                                </ul>
+                                <!-- END Notification Dropdown Menu -->
+
+                            </li>
+                            <!-- END Notification -->
+                            <!--START User Settings-->
+                            <li class="dropdown">
+                                @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+                                {
+                                    @Html.AntiForgeryToken()
+
+                                    //var db = new ApplicationDbContext();
+                                    //var user = User.Identity.GetUserId();
+
+
+                                    if (Request.IsAuthenticated)
+                                    {
+                                        var Name = db.Users.Find(user).DisplayName;
+                                        //var Avatar = db.Users.Find(user).Avatar;
+                                        <a class="dropdown-toggle user-dropdown" data-toggle="dropdown" href="#" role="button">
+                                            <span class="m-r-1">Hello @Name!</span>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li class="dropdown-header text-gray-lighter">
+                                                <strong class="text-uppercase">Account</strong>
+                                            </li>
+                                            <li role="separator" class="divider"></li>
+                                            @*<li>
+                                                    <a href=@Url.Action("UserProfile", "Account")>Profile</a>
+                                                </li>*@
+                                            <li>
+                                                <a href=@Url.Action("Index", "Manage")>Settings</a>
+                                            </li>
+
+                                            <li role="separator" class="divider"></li>
+                                            <li>
+                                                <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
+                                            </li>
+
+                                        </ul>
+                                    }
+                                    else
+                                    {
+                                        <span class="m-r-1">
+                                            @Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink", role = "button" })
+                                            @Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink", role = "button" })
+                                        </span>
+                                    }
+
+                                }
+
+
+                            </li>
+                            <!--END User Settings-->
+                            @*<li class="hidden-xs">
+                                    <a class="action-right-sidebar-toggle" title="Right sidebar on/off">
+                                        <i class="fa fa-lg fa-align-right"></i>
+                                    </a>
+                                </li>*@
+                        </ul>
+                        <!-- END Right Side Navbar -->
+                    </div>
+                </div>
+            </div>
+            <!-- END Navbar -->
+            <!-- START Sidebars -->
+            <aside class="navbar-default sidebar">
+                <div class="sidebar-overlay-head">
+                    <img src="~/images/favicon.png" alt="Logo" width="90">
+                    <a href="#" class="sidebar-switch action-sidebar-close">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+                <div class="sidebar-logo">
+                    <img class="logo-default" src="~/images/favicon.png" alt="Logo" width="53">
+                    <img class="logo-slim" src="~/images/favicon.png" alt="Logo" height="13">
+                </div>
+
+                <div class="sidebar-content">
+                    <div class="p-y-3 avatar-container">
+                        <img src="~/images/avatars/spin-avatar-woman.png" width="50" alt="Avatar" class="spin-avatar img-circle">
+                        <div class="text-center">
+                            <h6 class="m-b-0">Michelle Baez</h6>
+                            <small class="text-muted">Help Desk</small>
+                            <p class="m-t-1 m-b-2">
+                                <span id="sidebar-avatar-chart">5,3,2,-1,-3,-2,2,3,5,2</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="sidebar-default-visible text-muted small text-uppercase sidebar-section p-y-2">
+                        <strong class="text-black">Navigation</strong>
+                    </div>
+
+                    <!-- START Tree Sidebar Common -->
+                    <ul class="side-menu">
+
+                        <li class="Dashboards">
+                            <a href=@Url.Action("Index", "Home")>
+                                <span class="text-black"><i class="fa fa-home fa-lg fa-fw"></i></span>
+                                <span class="nav-label text-black">Home</span>
+                            </a>
+                        </li>
+
+                        <li class="Dashboards">
+                            <a href="#">
+                                <span class="text-black"><i class="fa fa-book fa-lg fa-fw"></i></span>
+                                <span class="nav-label text-black">Projects</span>
+                                <i class="fa arrow text-black"></i>
+                            </a>
+
+                            <ul>
+                                <li class="">
+                                    <a href=@Url.Action("MyProjects", "Projects")>
+                                        <span class="nav-label text-black">My Projects</span>
+                                    </a>
+                                </li>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <li class="">
+                                        <a href=@Url.Action("Index", "Projects")>
+                                            <span class="nav-label text-black">All Projects</span>
+                                        </a>
+                                    </li>
+                                }
+
+                            </ul>
+                        </li>
+
+                        <li>
+                            <a href="#" title="Dashboards">
+                                <span class="text-black"><i class="fa fa-ticket fa-lg"></i></span>
+                                <span class="nav-label text-black">Tickets</span>
+                                <i class="fa arrow text-black"></i>
+                            </a>
+                            <ul>
+                                <li>
+                                    <a href="@Url.Action("Index", "Tickets")">
+                                        <span class="nav-label text-black">All Tickets</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    @if (User.IsInRole("Submitter"))
+                                    {
+                                        <a href="@Url.Action("OwnedTickets", "Tickets")">
+                                            <span class="nav-label text-black">My Tickets</span>
+                                        </a>
+                                    }
+                                    else if (User.IsInRole("Developer"))
+                                    {
+                                        <a href="@Url.Action("AssignedToTickets", "Tickets")">
+                                            <span class="nav-label text-black">My Tickets</span>
+                                        </a>
+                                    }
+                                    else if (User.IsInRole("Project Manager"))
+                                    {
+                                        <a href="@Url.Action("PMTickets", "Tickets")">
+                                            <span class="nav-label text-black">My Tickets</span>
+                                        </a>
+                                    }
+
+                                </li>
+                            </ul>
+
+                        </li>
+
+                    </ul>
+                    <!-- END Tree Sidebar Common  -->
+
+
+                    <div class="sidebar-default-visible">
+                        <hr>
+                    </div>
+
+
+                </div>
+            </aside>
+            <!-- END Sidebars -->
+        </nav>
+
+        <div class="content">
+            <div class="container-fluid">
+                @RenderBody()
+            </div>
+        </div>
+
+        <!-- START Layout Options (Right Side) -->
+        <div class="layout-options">
+            <button type="button" class="btn btn-primary action-toggle-layout-options" data-toggle="tooltip" data-placement="left" title="Show/Hide Layout settings"><i class="fa fa-gear"></i></button>
+            <button type="button" class="btn btn-primary action-toggle-layout-options disabled" data-toggle="tooltip" data-placement="left" title="Layout settings disabled on this page"><i class="fa fa-gear"></i></button>
+
+            <div class="panel panel-default">
+
+                <div class="panel-body">
+                    <!-- START Tabs: Options | Skins -->
+                    <ul class="nav nav-tabs nav-justified tab-color-panel-bg">
+                        <li role="presentation" class="active">
+                            <a aria-expanded="true" data-toggle="tab" href="#tab-options" role="tab">Options</a>
+                        </li>
+                        <li role="presentation">
+                            <a aria-expanded="true" data-toggle="tab" href="#tab-skins" role="tab">Skins</a>
+                        </li>
+                    </ul>
+                    <!-- END Tabs: Options | Skins -->
+                    <!-- START Tabs Content: Options & Skins -->
+                    <div class="tab-content p-t-2">
+                        <!-- START Tab Options -->
+                        <div class="tab-pane fade in active p-r-1" id="tab-options" role="tabpanel">
+                            <!-- START: Navbar options v2-->
+
+
+                            <p class="small text-uppercase"><strong>Navbar Options</strong></p>
+
+                            <label class="checkbox-inline">
+                                <input type="checkbox" id="layout-navbar-enabled" class="group-switch" checked="checked" data-target-body-class="navbar-disabled" data-direction="disabled"> Show/Hide
+                            </label>
+
+                            <label class="checkbox-inline">
+                                <input type="checkbox" id="layout-navbar-fixed" data-target-body-class="navbar-fixed" data-direction="enabled"> Fixed
+                            </label>
+
+
+                            <!-- END: Navbar options v2-->
+                            <!-- START: SubNavbar options -->
+                            <div class="input-group">
+                                <p class="small text-uppercase m-t-2">
+                                    <strong>Header Layout</strong>
+                                </p>
+
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="layout-subnavbar-enabled" class="group-switch" checked="checked" data-target-body-class="sub-navbar-disabled" data-direction="disabled"> Show/Hide
+                                    </label>
+                                </div>
+                            </div>
+                            <select class="form-control m-b-1" id="layout-subnavbar-style">
+                                <option selected="selected" value="">Header 1</option>
+                                <option value="sub-navbar-header-only">Header 2</option>
+                            </select>
+                            <!-- END: SubNavbar options -->
+                            <!-- START: Sidebar options -->
+                            <div class="input-group">
+
+                                <p class="small text-uppercase m-t-2"><strong>Sidebar Options</strong></p>
+
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="layout-sidebar-enabled" class="group-switch" checked="checked" data-target-body-class="sidebar-disabled" data-direction="disabled"> Show/Hide
+                                    </label>
+                                </div>
+
+                                <select class="form-control" id="layout-sidebar-style">
+                                    <option selected="selected" value="">Default Sidebar</option>
+                                    <option value="sidebar-slim">Slim Sidebar</option>
+                                    <option value="sidebar-big-icons">Big Icons Sidebar</option>
+                                    <option value="sidebar-big-icons sidebar-with-avatar">Big Icons with Avatar</option>
+                                </select>
+
+                                <div class="input-group p-t-1">
+                                    <label for="layout-sidebar-fixed" class="checkbox-inline">
+                                        <input type="checkbox" id="layout-sidebar-fixed" data-target-body-class="sidebar-fixed" data-direction="enabled"> Fixed
+                                    </label>
+
+                                    <label for="layout-sidebar-full-height" class="checkbox-inline">
+                                        <input type="checkbox" id="layout-sidebar-full-height" data-target-body-class="sidebar-full-height" data-direction="enabled"> Aside
+                                    </label>
+                                </div>
+
+                            </div>
+                            <!-- END: Sidebar options -->
+                            <!-- START: Content View -->
+                            <p class="small text-uppercase m-t-2"><strong>Content View</strong></p>
+                            <select class="form-control" id="layout-content-view">
+                                <option selected="selected" value="container">Container</option>
+                                <option value="container-fluid">Container Fluid</option>
+                                <option value="boxed-layout">Boxed</option>
+                            </select>
+                            <!-- END: Content View -->
+                            <!-- START: Footer Options -->
+                            <div class="input-group">
+                                <p class="small text-uppercase m-t-3"><strong>Footer Options</strong></p>
+
+                                <label for="layout-footer-enabled" class="checkbox-inline">
+                                    <input type="checkbox" id="layout-footer-enabled" class="group-switch" checked="checked" data-target-body-class="footer-disabled" data-direction="disabled"> Show/Hide
+                                </label>
+
+                                <label for="layout-footer-fixed" class="checkbox-inline">
+                                    <input type="checkbox" id="layout-footer-fixed" data-target-body-class="footer-fixed" data-direction="enabled"> Fixed
+                                </label>
+                            </div>
+                            <!-- END: Footer Options -->
+                        </div>
+                        <!-- END Tab Options -->
+                        <!-- START Tab Skins -->
+                        <div class="tab-pane fade in p-r-1" id="tab-skins" role="tabpanel">
+                            <p class="small text-uppercase"><strong>Main Color</strong></p>
+
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="mainColor" id="main-color-primary" value="primary" checked="checked">
+                                    Primary
+                                </label>
+                                <i class="fa fa-circle pull-right text-primary"></i>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="mainColor" id="main-color-info" value="info">
+                                    Info
+                                </label>
+                                <i class="fa fa-circle pull-right text-info"></i>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="mainColor" id="main-color-success" value="success">
+                                    Success
+                                </label>
+                                <i class="fa fa-circle pull-right text-success"></i>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="mainColor" id="main-color-warning" value="warning">
+                                    Warning
+                                </label>
+                                <i class="fa fa-circle pull-right text-warning"></i>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="mainColor" id="main-color-danger" value="danger">
+                                    Danger
+                                </label>
+                                <i class="fa fa-circle pull-right text-danger"></i>
+                            </div>
+
+                            <!-- Single button -->
+                            <!--          <div class="btn-group">
+                                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                  <i class="fa fa-circle text-primary"></i> Primary <span class="caret"></span>
+                                  </button>
+                                  <ul class="dropdown-menu dropdown-menu-right">
+                                  <li class="active"><a href="#"><i class="fa fa-circle text-primary"></i> Primary </a></li>
+                                  <li><a href="#"><i class="fa fa-circle text-info"></i> Info </a></li>
+                                  <li><a href="#"><i class="fa fa-circle text-success"></i> Success </a></li>
+                                  <li><a href="#"><i class="fa fa-circle text-warning"></i> Warning </a></li>
+                                  <li><a href="#"><i class="fa fa-circle text-danger"></i> Danger </a></li>
+                                  <li><a href="#"><i class="fa fa-circle text-soft-purple"></i> Soft Purple </a></li>
+                                  <li><a href="#"><i class="fa fa-circle text-lighting-yellow"></i> Lighting Yellow </a></li>
+                                  </ul>
+                                  </div>-->
+
+                            <p class="small text-uppercase m-t-2"><strong>Navbar</strong></p>
+
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="navbarStyle" id="navbar-style-dark" value="inverse">
+                                    Dark
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="navbarStyle" id="navbar-style-light" value="default" checked="checked">
+                                    Light
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="navbarStyle" id="navbar-style-color" value="color">
+                                    Like Main Color
+                                </label>
+                            </div>
+
+                            <p class="small text-uppercase m-t-2"><strong>Sidebar</strong></p>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="sidebarStyle" id="sidebar-style-dark" value="dark" checked="checked">
+                                    Dark
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="sidebarStyle" id="sidebar-style-light" value="light">
+                                    Light
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="sidebarStyle" id="sidebar-style-color" value="color">
+                                    Like Main Color
+                                </label>
+                            </div>
+                        </div>
+                        <!-- END Tab Skins -->
+
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <button type="button" class="btn btn-default btn-block action-reset-layout-options">Reset Options</button>
+                </div>
+            </div>
+        </div>
+        <!-- END Layout Options (Right Side) -->
+        <!-- START Footer -->
+        <footer>
+            <div class="container-fluid">
+                <p>
+                    <strong class="m-r-1">Eli N. Frazier</strong>
+                    <span>
+                        &#xA9; 2018. Made by SPIN, Edited by Eli N. Frazier
+                    </span>
+                    <span class="pull-right text-large">
+                        <a href="https://www.linkedin.com/in/eli-frazier-6bb90316b/" target="_blank"><i class="fa fa-linkedin text-black"></i></a>
+                        <a href="https://twitter.com/EliFrazier125" target="_blank"><i class="fa fa-twitter text-black"></i></a>
+                        <a href="https://github.com/Eli-Frazier" target="_blank"><i class="fa fa-github text-black"></i></a>
+                    </span>
+                    
+                </p>
+               
+            </div>
+        </footer>
+        <!-- END Footer -->
+
+    </div>
+
+
+    <script>
+        // Hide loader
+        (function () {
+            var bodyElement = document.querySelector('body');
+            bodyElement.classList.add('loading');
+
+            document.addEventListener('readystatechange', function () {
+                if (document.readyState === 'complete') {
+                    var bodyElement = document.querySelector('body');
+                    var loaderElement = document.querySelector('#initial-loader');
+
+                    bodyElement.classList.add('loaded');
+                    setTimeout(function () {
+                        bodyElement.removeChild(loaderElement);
+                        bodyElement.classList.remove('loading', 'loaded');
+                    }, 200);
+                }
+            });
+        })();
+    </script>
+
+    <script>
+        function AjaxRead(notificationId) {
+            $.ajax({
+                type: 'GET',
+                url: "@Url.Action("AjaxRead", "TicketNotifications")",
+                data: { id: notificationId },
+            });
+        }
+
+
+    </script>
+
+    
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <script src="~/Scripts/lib.min.js"></script>
+    <script src="~/Scripts/app.min.13a3a368.js"></script>
+
+    <script src="~/Scripts/bootstrap-select.min.js"></script>
+    <script src="~/Scripts/select2.min.js"></script>
+    <script src="~/Scripts/plugins-init.js"></script>
+
+    @*<script src="~/Scripts/jquery.dataTables.min.js"></script>
+        <script src="~/Scripts/dataTables.bootstrap.min.js"></script>*@
+
+    <script src="~/Scripts/switchery-settings.js"></script>
+
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>
+
+    @RenderSection("scripts", required: false)
+</body>
+
+</html>

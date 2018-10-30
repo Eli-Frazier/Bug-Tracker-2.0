@@ -1,0 +1,41 @@
+﻿@model IEnumerable<Bug_Tracker.Models.Project>
+
+<style>
+    h4{
+        color: black;
+    }
+</style>
+
+
+@foreach (var item in Model)
+{
+    <!-- START Project -->
+    <li class="list-group-item no-bg b-t-0">
+        <!-- START Media Task Name -->
+        <div class="media m-t-0">
+            <div class="media-body">
+                <!-- START ID & Title Task -->
+                <h5 class="m-b-1"><a href=@Url.Action("Details", "Projects", new { id = item.Id })>@item.Name</a></h5>
+                <!-- END ID & Title Task -->
+            </div>
+            
+        </div>
+        <!-- END Media Task Name -->
+
+        
+        <div class="row m-b-2">
+
+            <div class="col-sm-4 col-xs-4 text-center">
+                <h4 class="m-t-0 f-w-300 m-b-0">@item.Tickets.Count</h4>
+                <p class="text-center m-b-0">Tasks</p>
+            </div>
+
+            <div class="col-sm-4 col-xs-4 text-center">
+                <h4 class="m-t-0 f-w-300 m-b-0">@item.Users.Count</h4>
+                <p class="text-center m-b-0">Users on Project</p>
+            </div>
+
+        </div>
+    </li>
+}
+    <!-- END Project -->

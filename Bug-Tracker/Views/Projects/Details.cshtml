@@ -1,0 +1,201 @@
+﻿@using Microsoft.AspNet.Identity
+@using Bug_Tracker.Models
+@using Bug_Tracker.Helpers
+
+@model Bug_Tracker.Models.Project
+
+
+@{
+    var db = new ApplicationDbContext();
+    var user = User.Identity.GetUserId();
+    var userId = db.Users.Find(user).Id;
+
+    var projHelper = new ProjectHelper();
+    var roleHelper = new UserRolesHelper();
+    ViewBag.Title = "Details";
+}
+
+<div class="row">
+    <br />
+    <!-- START Left Column -->
+    <div class="col-lg-3">
+
+        <!-- START People -->
+        <div class="hr-text hr-text-left m-t-2 m-b-1">
+            <h6 class="text-white"><strong>Users on Project</strong></h6>
+        </div>
+
+        <!-- START Widget - Menu Pills Vertical -->
+        <div class="scroll-300 custom-scrollbar">
+            <ul class="nav nav-pills nav-stacked">
+
+                <!-- START User Online (Small) -->
+                @foreach (var person in Model.Users.OrderBy(u => u.FirstName))
+                {
+                    <li role="presentation">
+
+                        <div class="media">
+                            <div class="media-body">
+                                <h5 class="m-t-0 m-b-0"><span class="text-black"> @person.FirstName <span class="text-muted">(@person.DisplayName)</span></span></h5>
+                            </div>
+
+                        </div>
+
+                    </li>
+                }
+                <!-- START User Online (Small) -->
+
+                @if (User.IsInRole("Admin") || User.IsInRole("Project Manager"))
+                {
+                    <li role="presentation">
+                        <a href=@Url.Action("ProjectAssignment", "Admin") class="text-gray-lighter">
+                            <i class="fa fa-fw fa-plus text-muted m-r-1"></i>Add New People
+                        </a>
+                    </li>
+                }
+
+
+            </ul>
+        </div>
+        <!-- END Widget - Menu Pills Vertical -->
+        <!-- END People -->
+
+    </div>
+    <!-- END Left Column -->
+
+
+
+    <div class="col-lg-9 col-md-8">
+
+        <!-- START Header with Option -->
+        <div class="row m-b-1">
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                <!-- START Header -->
+                <h3 class="f-w-300 m-t-1">
+                    <a href=@Url.Action("MyProjects", "Projects")>
+                        Projects
+                    </a>
+
+                    <span class="text-muted">
+                        <span class="m-r-1 m-l-1">
+                            /
+                        </span>
+                    </span>
+
+                    <span class="text-black">@Model.Name</span>
+
+                    <span class="badge m-l-1 hidden-xs hidden-sm">
+                        @Model.Tickets.Count Tickets
+                    </span>
+                </h3>
+                <!-- END Header -->
+
+                <div class="btn-toolbar pull-right hidden-lg hidden-md hidden-sm">
+                    <div class="btn-group btn-group-justified" role="group" aria-label="...">
+                        <a role="button" href="tasks-list.html" class="btn btn-block btn-default active"><i class="fa fa-list"></i></a>
+                        <a class="btn btn-block btn-default" href="tasks-grid.html" role="button"><i class="fa fa-th-large"></i></a>
+                        <a class="btn btn-block btn-default" href="#" role="button"><i class="fa fa-plus"></i></a>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="col-lg-5 col-md-5 col-xs-6 col-lg-offset-1 col-md-offset-1 col-sm-4 col-sm-offset-2 hidden-xs">
+                <!-- START Toolbar -->
+                <div class="btn-toolbar pull-right">
+                    @if (User.IsInRole("Submitter") && projHelper.IsUserOnProject(userId, Model.Id))
+                    {
+                        <div class="btn-group" role="group" aria-label="...">
+                            <a href=@Url.Action("Create", "Tickets", new { id = Model.Id}) type="button" class="btn btn-primary"><span class="hidden-md hidden-sm hidden-xs">Add New Ticket</span> <i class="fa fa-fw fa-plus"></i></a>
+                        </div>
+                    }
+
+                </div>
+                <!-- END Toolbar -->
+            </div>
+        </div>
+        <!-- END Header with Option -->
+        <!-- START Table Files -->
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+
+                    <tr>
+                        <th class="small text-muted text-uppercase">
+                            <strong>Priority</strong>
+                        </th>
+                        <th class="small text-muted text-uppercase">
+                            <strong>Title &amp; Description</strong>
+                        </th>
+                        <th class="small text-muted text-right text-uppercase">
+                            <strong>People</strong>
+                        </th>
+                        <th class="small text-muted text-right text-uppercase">
+                            <strong>Update</strong>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <!-- START ROW Task -->
+                    @foreach (var ticket in Model.Tickets.OrderByDescending(c => c.Created))
+                    {
+                        <tr>
+                            <td class="v-a-m">
+                                @ticket.TicketPriority.Name
+                            </td>
+
+
+                            <td class="v-a-m">
+                                <span class="text-muted m-r-1"><span>#@ticket.Id</span></span><a href=@Url.Action("Details", "Tickets", new { id = ticket.Id })><span>@ticket.Title</span></a>
+                                <br>
+                                @{
+                                    var strLength = @ticket.Description.Length;
+                                    var newLength = strLength > 250 ? 250 : strLength;
+                                }
+                                <span>
+                                    @ticket.Description.Substring(0, newLength)
+                                </span>
+                                @if (strLength != newLength)
+                                {
+                                    @Html.ActionLink(" ...(read more)", "Details", "Tickets", new { id = ticket.Id }, null)
+                                }
+                            </td>
+
+                            @if (ticket.AssignedToUserId != null)
+                            {
+                                <td class="v-a-m text-right">
+                                    @ticket.AssignedToUser.DisplayName
+                                </td>
+                            }
+                            else
+                            {
+                                <td class="v-a-m text-right">
+                                    <span class="text-danger">Unassigned</span>
+                                </td>
+                            }
+
+
+                            <td class="v-a-m text-right">
+                                <span>@ticket.Updated.ToString().Split(' ')[0]</span>
+                            </td>
+                        </tr>
+                    }
+                    <!-- END ROW Task -->
+
+                </tbody>
+            </table>
+        </div>
+        <!-- END Table Files -->
+
+    </div>
+
+</div>
+
+<!-- END EDIT CONTENT -->
+
+@section scripts{
+    <script>
+        $('.table').DataTable();
+    </script>
+}
